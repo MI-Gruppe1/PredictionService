@@ -1,22 +1,35 @@
 package service;
+/**
+ * 
+ * @author Moritz Heindorf
+ * This class offers one/several methods to calculate the predictes amount of bikes present at a certain station
+ */
+
 
 public class Predictor {
 
 	
 	/**
+	 * This method calculates the predicted value of bikes present at a station in the next hour based on the weather, 
+	 * precipitation and bikes present at the same time and weekday for the past two weeks at this station.
 	 * 
+	 * @param address The address of the station for which the prediction should be made.
 	 * 
-	 * @return
+	 * @return returns an array of integers where the first entry is the predicted value and the following 5 entries are the current amount of bikes and the bikes present in the last 4 hors respectively
 	 */
 	public double[] predict(String address){
 		double result[] = {0,0,0,0,0,0};
 		double weightA = 0;
 		double weightB = 0;
 		
-		//get Inputs for Address
+		//TODO get Inputs for Address
 		double bikes[] = {0,0,0,0,0};		
 		double temperature[] = {0,0,0};
 		double precipitation[] = {0,0,0};
+		//TODO can i access the databank services from here or do i have to call someone else?
+		
+		
+		//TODO fill the result array with data from the past 5 hours
 		
 		
 		//weather comparison
@@ -48,7 +61,23 @@ public class Predictor {
 		
 		
 		
-		return result;//KEK enough for the demo
+		return result;
 	}
 	
+	/**
+	 * This method calculates the predicted value of bikes present at a station in the next hour based on the weather, 
+	 * precipitation and bikes present at the same time and weekday for the past X weeks at this station.
+	 * @param address The address of the station for which the prediction should be made.
+	 * @param numOfSamples The number of timestamps that are to be used for the prediction
+	 * @return
+	 */
+	
+	public double[] predict(String address, int numOfSamples){
+		double result[] = {0,0,0,0,0,0};
+		
+		//TODO IMPLEMENT THIS
+		
+		
+		return result;
+	}
 }
