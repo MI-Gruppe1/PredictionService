@@ -35,16 +35,13 @@ public class Predictor {
         System.out.println(testRequest().toString());
     }
 	
-//	private static JsonArray createJsonArrayFromArrayList(ArrayList<Integer> listInt){
-//    	JsonArray jarray = new JsonArray();
-//    	
-//    	for(int i = 0; i < listInt.size();i++){
-//    		jarray.add(listInt.get(i));
-//    	}
-//    	return jarray;
-//    }
-    
-	
+	/**
+	 * This method creates a JSONObject out of a array of doubles
+	 * 
+	 * @param Array of doubles.
+	 * 
+	 * @return returns JSONObject for array of doubles
+	 */
     private static JSONObject createJsonArrayFromDoubleArray(double[] doubleArray){
     	JSONObject jObject = new JSONObject();
     	
@@ -108,12 +105,12 @@ public class Predictor {
 	 * 
 	 * @return returns 
 	 */
-    private static Integer getTemperatureAtTime(String name, String timeStamp){
-    	Integer result = 0;
+    private static double getTemperatureAtTime(String name, String timeStamp){
+    	double result = 0;
     	try {
     		HttpResponse<String> stringResponse = Unirest.get("http://localhost:4567" + "/temperatureAtTime").asString();
     		
-    		//result = stringResponse.getBody().toString();
+    		result = Double.valueOf(stringResponse.getBody().toString());
 		
     	} catch (UnirestException e) {
 			// TODO Auto-generated catch block
@@ -143,21 +140,7 @@ public class Predictor {
 		}
     	return result;
     }
-//    
-//    private static JSONArray request(String name) {
-//    	JSONArray result = new JSONArray();
-//    	try {
-//    		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://localhost:4567/predictionService")
-//			.queryString("name", name)
-//			.asJson();
-//    		result = jsonResponse.getBody().getArray();
-//		} catch (UnirestException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    	
-//    	return result;
-//    }
+    
     
     private static JSONArray testRequest() {
     	JSONArray result = new JSONArray();
