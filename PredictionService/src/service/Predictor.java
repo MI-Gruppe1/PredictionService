@@ -16,7 +16,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 /**
  * 
  * @author Moritz Heindorf and Harry
- * This class offers one/several methods to calculate the predictes amount of bikes present at a certain station
+ * This class offers one/several methods to calculate the predicted amount of bikes present at a certain station
  */
 
 
