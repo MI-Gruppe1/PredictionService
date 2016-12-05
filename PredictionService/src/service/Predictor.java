@@ -247,6 +247,9 @@ public class Predictor {
 		long hour = 60 * 60 * 1000;// one hour in milliseconds
 		double result[] = {0,0,0,0,0,0};
 		
+		double tempdif[]= new double[numOfSamples];
+		double precdif[] = new double[numOfSamples];
+		double availdif[] = new double[numOfSamples];
 		//TODO get Inputs for Address
 		
 		double bikes[] =new double [1+2*numOfSamples];		
@@ -277,33 +280,67 @@ public class Predictor {
 		
 		//weather comparison
 		//smaller (absolute) difference gets higher weight in prediction 
-		if(Math.pow((temperature[0]-temperature[1]),2)<=Math.pow((temperature[0]-temperature[2]),2)){
-			weightA+=0.33;
-		}else{
-			weightB+=0.33;
+		
+		//calculate absolute temperature differences
+		for(int i = 1;i<temperature.length; i++){
+			tempdif[i-1]=Math.pow((temperature[0]-temperature[i]),2);	
 		}
+		
+		int j = findSmallestArrayElement(tempdif);
+		tempdif[j]=10000; //set value to highvalue to enable finding the second smallest element
+		weight[j]*=0.22;
+		
+		//find second smallest element by running the search again
+		j = findSmallestArrayElement(tempdif);
+		weight[j]*=0.11;
+		
+		
 		//precipitation comparison
-		//smaller difference leads to higher weight for the dataset
-		if(Math.pow((precipitation[0]-precipitation[1]),2)<=Math.pow((precipitation[0]-precipitation[2]),2)){
-			weightA+=0.33;
-		}else{
-			weightB+=0.33;
+			
+		for(int i = 1;i<precipitation.length; i++){
+			precdif[i-1]=Math.pow((precipitation[0]-precipitation[i]),2);	
 		}
-		//bike availability comparison
-		//smaller differences in availability leads to higher weight for the dataset in the calculation
-		if(Math.pow((bikes[0]-bikes[1]),2)<=Math.pow((bikes[0]-bikes[3]),2)){
-			weightA+=0.33;
-		}else{
-			weightB+=0.33;
+		
+		j = findSmallestArrayElement(precdif);
+		precdif[j]=10000; //set value to a highvalue to enable finding the second smallest element
+		weight[j]*=0.22;
+		
+		//find second smallest element by running the search again
+		j = findSmallestArrayElement(precdif);
+		weight[j]*=0.11;
+		
+	
+		for (int i = 0;i<numOfSamples;i++){
+			availdif[i]=Math.pow((bikes[0]-bikes[i*2+1]),2);
 		}
+		j = findSmallestArrayElement(availdif);
+		weight[j]*=0.34;
+		
+		double gradient = 0;
 		//calculate gradient based on precalcualted weight
 		//current+(gradient) gradient = sum of weights multiplied with gradients
-		//since there are no "half" bikes we roud down
-		result[0]=(int) bikes[0]+(weightA*(bikes[1]-bikes[2])+weightB*(bikes[3]-bikes[4]));
-		
-		
+		//since there are no "half" bikes we round down
+		for (int i = 1;i<numOfSamples; i++){
+			
+			gradient+=(bikes[i*2-1]-bikes[i*2])*weight[i-1];
+			
+		}
+		result[0]=bikes[0]+gradient;
 		
 		
 		return result;
 	}
+	//returns the position of the smallest array element
+	private static int findSmallestArrayElement(double[] array){
+		int result = 0;
+		
+		for (int i = 1; i< array.length;i++){
+			if(array[i]<array[result]){
+				result = i;
+			}
+		}
+		
+		return result;
+	}
+	
 }
