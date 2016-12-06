@@ -1,9 +1,7 @@
 package service;
 
-
 import java.util.ArrayList;
 import java.util.Date;
-
 
 /**
  * 
@@ -116,7 +114,7 @@ public class Predictor {
 	 *         respectively
 	 */
 
-	public double[] predict(String address, int numOfSamples) {
+	public double[] predict(String address, int numOfSamples) throws InvalidDataException {
 		Date now = new Date();
 		long time = now.getTime();
 		long day = 24 * 60 * 60 * 1000;// one day in milliseconds
@@ -133,27 +131,44 @@ public class Predictor {
 		double precipitation[] = new double[1 + numOfSamples];
 		double weight[] = new double[numOfSamples];
 
-		bikes[0] = comm.getFreeBikesofStationAtSpecTime(address, time);
-
-		for (int i = 1; i < numOfSamples; i++) {
+		bikes[0] = (int) comm.getFreeBikesofStationAtSpecTime(address, time);
+		if (bikes[0] < 0)
+			throw new InvalidDataException("invalid current bikes");
+		System.out.println("bikes[0]:"+bikes[0]);
+		
+		for (int i = 1; i <= numOfSamples; i++) {
 
 			bikes[2 * i - 1] = comm.getFreeBikesofStationAtSpecTime(address, (time - i * day));
 			bikes[2 * i] = comm.getFreeBikesofStationAtSpecTime(address, (time - i * day - hour));
+			if (bikes[2 * i - 1] < 0)
+				throw new InvalidDataException("invalid bike data");
+			if (bikes[2 * i - 1] < 0)
+				throw new InvalidDataException("invalid bike data");
 
+			System.out.println("bikes["+(2*i-1)+"]:"+bikes[2 * i - 1]);
+			System.out.println("bikes["+(2*i)+"]:"+bikes[2 * i]);
 		}
 
 		for (int i = 0; i < numOfSamples + 1; i++) {
 			temperature[i] = comm.getTemperatureAtTime(address, time - i * day);
 			precipitation[i] = comm.getWeatherAtTime(address, time - i * day);
-		}
 
+			if (temperature[i] < 0)
+				throw new InvalidDataException("invalid temperature data");
+			if (precipitation[i] < 0)
+				throw new InvalidDataException("invalid precipitation data");
+		
+			System.out.println("tempdata["+i+"]:"+temperature[i]);
+			System.out.println("precipitation["+i+"]:"+precipitation[i]);
+		}
+		/*
 		// fill result array with the past 5 hours
 		for (int i = 1; i < result.length; i++) {
-			result[i] = comm.getFreeBikesofStationAtSpecTime(address, time - i * hour);
+			result[i] = (int) comm.getFreeBikesofStationAtSpecTime(address, time - i * hour);
+			if (result[i] < 0)
+				throw new InvalidDataException("invalid bike data for result");
 		}
-
-		// TODO anpassen an samplesize
-
+*/
 		// weather comparison
 		// smaller (absolute) difference gets higher weight in prediction
 
@@ -165,11 +180,11 @@ public class Predictor {
 		int j = findSmallestArrayElement(tempdif);
 		tempdif[j] = 10000; // set value to highvalue to enable finding the
 							// second smallest element
-		weight[j] *= 0.22;
+		weight[j] += 0.22;
 
 		// find second smallest element by running the search again
 		j = findSmallestArrayElement(tempdif);
-		weight[j] *= 0.11;
+		weight[j] += 0.11;
 
 		// precipitation comparison
 
@@ -180,17 +195,17 @@ public class Predictor {
 		j = findSmallestArrayElement(precdif);
 		precdif[j] = 10000; // set value to a highvalue to enable finding the
 							// second smallest element
-		weight[j] *= 0.22;
+		weight[j] += 0.22;
 
 		// find second smallest element by running the search again
 		j = findSmallestArrayElement(precdif);
-		weight[j] *= 0.11;
+		weight[j] += 0.11;
 
 		for (int i = 0; i < numOfSamples; i++) {
 			availdif[i] = Math.pow((bikes[0] - bikes[i * 2 + 1]), 2);
 		}
 		j = findSmallestArrayElement(availdif);
-		weight[j] *= 0.34;
+		weight[j] += 0.34;
 
 		double gradient = 0;
 		// calculate gradient based on precalcualted weight
@@ -202,8 +217,16 @@ public class Predictor {
 			gradient += (bikes[i * 2 - 1] - bikes[i * 2]) * weight[i - 1];
 
 		}
-		result[0] = bikes[0] + gradient;
-
+		result[0] = bikes[0] +gradient;
+		if (result[0] < 0) {
+			result[0] = 0;
+		}
+		
+		result[0]=Math.floor(result[0]);
+		for(int i = 0; i<result.length;i++){
+			System.out.println(result[i]);
+		}
+		
 		return result;
 	}
 
