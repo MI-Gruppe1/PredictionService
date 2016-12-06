@@ -11,7 +11,13 @@ import java.util.Date;
  *         calculate the predicted amount of bikes present at a certain station
  */
 
-public class Predictor {
+interface Prediction{
+	
+	public double[] predict(String address, int numOfSamples);
+	
+}
+
+public class Predictor implements Prediction{
 
 	private Communicator comm;
 

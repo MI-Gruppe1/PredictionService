@@ -1,30 +1,40 @@
 package service;
 
+
+import static spark.Spark.get;
+
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.google.gson.JsonArray;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
+import spark.QueryParamsMap;
+
 interface Communicator{
 	
 	public Integer getFreeBikesofStationAtSpecTime(String stationName, Long timeStamp);
 	public double getTemperatureAtTime(String name, Long timeStamp);
 	public double getWeatherAtTime(String name, Long timeStamp);
+	public JSONObject getPrediction(String stationsname);
 	
 }
-
 public class Communication implements Communicator {
 
-	Predictor pred;
+	Predictor prediction;
 	
-	//TODO anpassen
-	public static void main( String[] args )
-    {
-		// defines REST Api for predictionService
-		get("/predictionService", (req, res) -> {
-        	String name = req.queryParams("name");
-        	return createJsonArrayFromDoubleArray(predict(name));	
-        });
-        
-		//tests the output
-        System.out.println(testRequest().toString());
-    }
+	public Communication(){
+		prediction = new Predictor(this);
+	}
 	
+	public JSONObject getPrediction(String stationsname){
+		return createJsonArrayFromDoubleArray(prediction.predict(stationsname, 5));
+	}
 	
 	
 	/**
@@ -63,6 +73,8 @@ public class Communication implements Communicator {
 		}
     	return result;
     }
+    
+    
     
 	/**
 	 * This method requests the amount of free Bikes of a specific Station at a specific Time from the StadtRadDBService.
