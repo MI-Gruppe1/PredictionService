@@ -1,0 +1,61 @@
+package tests;
+
+import service.*;
+
+/**
+ * Test Stub for the Communication class returns data given at construction
+ * returns one date on each call and goes to the next datapoint
+ * 
+ * @author Moritz Heindorf
+ *
+ */
+
+public class ComStub implements Communicator {
+
+	double[] WeatherData;
+	double[] PrecData;
+	int[] BikesData;
+
+	int WC;
+	int PC;
+	int BC;
+
+	public ComStub(double[] WeatherData, double[] PrecData, int[] BikesData) {
+		this.WeatherData = WeatherData;
+		this.PrecData = PrecData;
+		this.BikesData = BikesData;
+		WC = 0;
+		PC = 0;
+		BC = 0;
+	}
+
+	@Override
+	public Integer getFreeBikesofStationAtSpecTime(String stationName, Long timeStamp) {
+		int result;
+		if (BC < BikesData.length) {
+			result = this.BikesData[BC];
+			BC++;
+		} else
+			result = 0;
+		return result;
+
+	}
+
+	@Override
+	public double getTemperatureAtTime(String name, Long timeStamp) {
+		double result;
+		if (WC < WeatherData.length) {
+			result = this.WeatherData[BC];
+			WC++;
+		} else
+			result = 0;
+		return result;
+	}
+
+	@Override
+	public double getWeatherAtTime(String name, Long timeStamp) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

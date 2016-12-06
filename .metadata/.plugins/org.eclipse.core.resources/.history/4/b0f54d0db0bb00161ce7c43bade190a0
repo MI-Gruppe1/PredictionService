@@ -1,0 +1,37 @@
+package tests;
+
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+import service.Communicator;
+
+public class ComStub implements Communicator {
+
+	@Override
+	public Integer getFreeBikesofStationAtSpecTime(String stationName, Long timeStamp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getTemperatureAtTime(String name, Long timeStamp) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getWeatherAtTime(String name, Long timeStamp) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}
+
+public class PredictorTestbench {
+
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
+
+}

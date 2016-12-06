@@ -1,0 +1,19 @@
+package tests;
+
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+import service.Communicator;
+
+
+
+public class PredictorTestbench {
+
+	@Test
+	public void test() {
+		//create Test Data Stub
+		ComStub stub = new ComStub();
+		fail("Not yet implemented");
+	}
+
+}

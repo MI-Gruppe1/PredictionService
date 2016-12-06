@@ -1,0 +1,251 @@
+package service;
+
+import static spark.Spark.get;
+
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.google.gson.JsonArray;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
+/**
+ * 
+ * @author Moritz Heindorf and Harry
+ * This class offers one/several methods to calculate the predicted amount of bikes present at a certain station
+ */
+
+
+public class Predictor {
+
+	
+	public static void main( String[] args )
+    {
+		// defines REST Api for predictionService
+		get("/predictionService", (req, res) -> {
+        	String name = req.queryParams("name");
+        	return createJsonArrayFromDoubleArray(predict(name));	
+        });
+        
+		//tests the output
+        System.out.println(testRequest().toString());
+    }
+	
+	/**
+	 * This method creates a JSONObject out of a array of doubles
+	 * 
+	 * @param Array of doubles.
+	 * 
+	 * @return returns JSONObject for array of doubles
+	 */
+    private static JSONObject createJsonArrayFromDoubleArray(double[] doubleArray){
+    	JSONObject jObject = new JSONObject();
+    	
+    	jObject.put("doubles",doubleArray);
+    	return jObject;
+    }
+    
+	/**
+	 * This method requests the current amount of free Bikes of a specific Station from the StadtRadDBService.
+	 * 
+	 * @param name of the Station.
+	 * 
+	 * @return returns amount of free bikes
+	 */
+    private static Integer getFreeBikesOfStation(String stationName){
+    	Integer result = 0;
+    	try {
+    		HttpResponse<String> stringResponse = Unirest.get("http://localhost:4567" + "/freeBikesOfStation")
+			.queryString("station_name", stationName)
+			.asString();
+    		
+    		// stringResponse.getBody().toString() ---- Integer als String?
+    		result = Integer.valueOf(stringResponse.getBody().toString());
+		} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return result;
+    }
+    
+	/**
+	 * This method requests the amount of free Bikes of a specific Station at a specific Time from the StadtRadDBService.
+	 * 
+	 * @param name of the Station and TimeStamp.
+	 * 
+	 * @return returns amount of free bikes
+	 */
+    private static Integer getFreeBikesofStationAtSpecTime(String stationName, String timeStamp){
+    	Integer result = 0;
+    	try {
+    		HttpResponse<String> stringResponse = Unirest.get("http://localhost:4567" + "/freeBikesofStationAtSpecTime")
+			.queryString("station_name", stationName)
+			.queryString("information_timestamp", timeStamp).asString();
+    		
+    		
+    		// stringResponse.getBody().toString() ---- Integer als String?
+    		result = Integer.valueOf(stringResponse.getBody().toString());
+		
+    	} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	return result;
+    }
+    
+	/**
+	 * This method requests the temperature at a specific time from the WeatherService.
+	 * 
+	 * @param ?.
+	 * 
+	 * @return returns 
+	 */
+    private static double getTemperatureAtTime(String name, String timeStamp){
+    	double result = 0;
+    	try {
+    		HttpResponse<String> stringResponse = Unirest.get("http://localhost:4567" + "/temperatureAtTime").asString();
+    		
+    		result = Double.valueOf(stringResponse.getBody().toString());
+		
+    	} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return result;
+    }
+    
+    
+	/**
+	 * This method requests the current Weather from the WeatherService.
+	 * 
+	 * @param ?.
+	 * 
+	 * @return returns 
+	 */
+    private static Integer getCurrentWeather(String name, String timeStamp){
+    	Integer result = 0;
+    	try {
+    		HttpResponse<String> stringResponse = Unirest.get("http://localhost:4567" + "/currentWeather").asString();
+    		
+    		// result = stringResponse.getBody().toString();
+		
+    	} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return result;
+    }
+    
+    
+    private static JSONArray testRequest() {
+    	JSONArray result = new JSONArray();
+    	try {
+    		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://localhost:4567/predictionService")
+			.queryString("name", "Mark")
+			.asJson();
+    		result = jsonResponse.getBody().getArray();
+		} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	return result;
+    }
+	
+	/**
+	 * This method calculates the predicted value of bikes present at a station in the next hour based on the weather, 
+	 * precipitation and bikes present at the same time and weekday for the past two weeks at this station.
+	 * 
+	 * @param address The address of the station for which the prediction should be made.
+	 * 
+	 * @return returns an array of integers where the first entry is the predicted value and the following 5 entries are the current amount of bikes and the bikes present in the last 4 hors respectively
+	 */
+	private static double[] predict(String address){
+		Date now = new Date();
+		long time = now.getTime();
+		long day = 24 * 60 * 60 * 1000;//one day in milliseconds
+		long hour = 60 * 60 * 1000;// one hour in milliseconds
+		double result[] = {0,0,0,0,0,0};
+		double weightA = 0;
+		double weightB = 0;
+		
+		//TODO get Inputs for Address
+		
+		double bikes[] = {0,0,0,0,0};		
+		double temperature[] = {0,0,0};
+		double precipitation[] = {0,0,0};
+		
+		
+		bikes [0] = getFreeBikesofStationAtSpecTime(address,time);
+		bikes [1] = getFreeBikesofStationAtSpecTime(address,(time-day));
+		bikes [2] = getFreeBikesofStationAtSpecTime(address,(time-day-hour));
+		bikes [3] = getFreeBikesofStationAtSpecTime(address,(time-2*day));
+		bikes [4] = getFreeBikesofStationAtSpecTime(address,(time-2*day-hour));
+		
+		temperature [0] = getTemperatureAtTime(address,time);
+		temperature [1] = getTemperatureAtTime(address,(time-day));
+		temperature [2] = getTemperatureAtTime(address,(time-2*day));
+		
+		precipitation [0] = getCurrentWeather(address,time);
+		precipitation [1] = getCurrentWeather(address,(time-day));
+		precipitation [2] = getCurrentWeather(address,(time-2*day));
+		
+		for(int i = 1; i<6; i++){
+			result [i] = getFreeBikesofStationAtSpecTime(address,time-i*hour);
+		}
+		
+		//weather comparison
+		//smaller (absolute) difference gets higher weight in prediction 
+		if(Math.pow((temperature[0]-temperature[1]),2)<=Math.pow((temperature[0]-temperature[2]),2)){
+			weightA+=0.33;
+		}else{
+			weightB+=0.33;
+		}
+		//precipitation comparison
+		//smaller difference leads to higher weight for the dataset
+		if(Math.pow((precipitation[0]-precipitation[1]),2)<=Math.pow((precipitation[0]-precipitation[2]),2)){
+			weightA+=0.33;
+		}else{
+			weightB+=0.33;
+		}
+		//bike availability comparison
+		//smaller differences in availability leads to higher weight for the dataset in the calculation
+		if(Math.pow((bikes[0]-bikes[1]),2)<=Math.pow((bikes[0]-bikes[3]),2)){
+			weightA+=0.33;
+		}else{
+			weightB+=0.33;
+		}
+		//calculate gradient based on precalcualted weight
+		//current+(gradient) gradient = sum of weights multiplied with gradients
+		//since there are no "half" bikes we roud down
+		result[0]=(int) bikes[0]+(weightA*(bikes[1]-bikes[2])+weightB*(bikes[3]-bikes[4]));
+		
+		
+		
+		
+		return result;
+	}
+	
+	/**
+	 * This method calculates the predicted value of bikes present at a station in the next hour based on the weather, 
+	 * precipitation and bikes present at the same time and weekday for the past X weeks at this station.
+	 * @param address The address of the station for which the prediction should be made.
+	 * @param numOfSamples The number of timestamps that are to be used for the prediction
+	 * @return
+	 */
+	
+	private static double[] predict(String address, int numOfSamples){
+		double result[] = {0,0,0,0,0,0};
+		
+		//TODO IMPLEMENT THIS
+		
+		
+		return result;
+	}
+}

@@ -1,0 +1,35 @@
+package tests;
+
+import service.*;
+
+public class ComStub implements Communicator {
+
+	double[] WeatherData;
+	double[] PrecData;
+	int[] BikesData;
+		
+	public ComStub(double[] WeatherData,double[] PrecData,int[] BikesData){
+		this.WeatherData
+		this.PrecData
+		this.BikesData
+	}
+	
+	@Override
+	public Integer getFreeBikesofStationAtSpecTime(String stationName, Long timeStamp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getTemperatureAtTime(String name, Long timeStamp) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getWeatherAtTime(String name, Long timeStamp) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}
