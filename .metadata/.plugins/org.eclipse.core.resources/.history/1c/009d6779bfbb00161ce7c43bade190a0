@@ -22,11 +22,19 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import spark.QueryParamsMap;
 
-
+interface Communicator{
+	
+	public Integer getFreeBikesofStationAtSpecTime(String stationName, Long timeStamp);
+	public double getTemperatureAtTime(String stationsname, Long timeStamp);
+	public double getWeatherAtTime(String stationsname, Long timeStamp);
+	public JSONObject getPrediction(String stationsname);
+	public double getWeatherConditionAtTime(String stationsname, Long timestamp);
+	
+}
 >>>>>>> 77993a2e9f0f04021405b33aca6f5a612582c242
 public class Communication implements Communicator {
 
-	Prediction prediction;
+	Predictor prediction;
 	Map<String,Double> latMap = new HashMap<String,Double>();
 	Map<String,Double> longMap = new HashMap<String,Double>();
 	String WeatherDBServerAdress = "http://localhost:4567";

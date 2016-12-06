@@ -1,4 +1,4 @@
-interface Predictor{
+interface Prediction{
 	
 	public double[] predict(String address, int numOfSamples);
 	

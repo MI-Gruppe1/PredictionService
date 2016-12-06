@@ -26,7 +26,7 @@ import spark.QueryParamsMap;
 >>>>>>> 77993a2e9f0f04021405b33aca6f5a612582c242
 public class Communication implements Communicator {
 
-	Prediction prediction;
+	Predictor prediction;
 	Map<String,Double> latMap = new HashMap<String,Double>();
 	Map<String,Double> longMap = new HashMap<String,Double>();
 	String WeatherDBServerAdress = "http://localhost:4567";
