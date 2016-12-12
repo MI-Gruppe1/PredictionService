@@ -1,7 +1,8 @@
 package service;
 
-import java.util.ArrayList;
 import java.util.Date;
+
+import javax.management.InvalidAttributeValueException;
 
 /**
  * 
@@ -12,7 +13,7 @@ public class Prediction implements Predictor{
 
 	private Communicator comm;
 
-	public Predictor(Communicator comm) {
+	public Prediction(Communicator comm) {
 
 		this.comm = comm;
 
@@ -57,9 +58,9 @@ public class Prediction implements Predictor{
 		temperature[1] = comm.getTemperatureAtTime(address, (time - day));
 		temperature[2] = comm.getTemperatureAtTime(address, (time - 2 * day));
 
-		precipitation[0] = comm.getWeatherAtTime(address, time);
-		precipitation[1] = comm.getWeatherAtTime(address, (time - day));
-		precipitation[2] = comm.getWeatherAtTime(address, (time - 2 * day));
+		precipitation[0] = comm.getWeatherConditionAtTime(address, time);
+		precipitation[1] = comm.getWeatherConditionAtTime(address, (time - day));
+		precipitation[2] = comm.getWeatherConditionAtTime(address, (time - 2 * day));
 
 		for (int i = 1; i < 6; i++) {
 			result[i] = comm.getFreeBikesofStationAtSpecTime(address, time - i * hour);
@@ -113,7 +114,7 @@ public class Prediction implements Predictor{
 	 *         respectively
 	 */
 
-	public double[] predict(String address, int numOfSamples) throws InvalidDataException {
+	public double[] predict(String address, int numOfSamples) throws InvalidAttributeValueException{
 		Date now = new Date();
 		long time = now.getTime();
 		long day = 24 * 60 * 60 * 1000;// one day in milliseconds
@@ -132,7 +133,7 @@ public class Prediction implements Predictor{
 
 		bikes[0] = (int) comm.getFreeBikesofStationAtSpecTime(address, time);
 		if (bikes[0] < 0)
-			throw new InvalidDataException("invalid current bikes");
+			throw new InvalidAttributeValueException("invalid current bikes");
 		System.out.println("bikes[0]:"+bikes[0]);
 		
 		for (int i = 1; i <= numOfSamples; i++) {
@@ -140,9 +141,9 @@ public class Prediction implements Predictor{
 			bikes[2 * i - 1] = comm.getFreeBikesofStationAtSpecTime(address, (time - i * day));
 			bikes[2 * i] = comm.getFreeBikesofStationAtSpecTime(address, (time - i * day - hour));
 			if (bikes[2 * i - 1] < 0)
-				throw new InvalidDataException("invalid bike data");
+				throw new InvalidAttributeValueException("invalid bike data");
 			if (bikes[2 * i - 1] < 0)
-				throw new InvalidDataException("invalid bike data");
+				throw new InvalidAttributeValueException("invalid bike data");
 
 			System.out.println("bikes["+(2*i-1)+"]:"+bikes[2 * i - 1]);
 			System.out.println("bikes["+(2*i)+"]:"+bikes[2 * i]);
@@ -150,12 +151,12 @@ public class Prediction implements Predictor{
 
 		for (int i = 0; i < numOfSamples + 1; i++) {
 			temperature[i] = comm.getTemperatureAtTime(address, time - i * day);
-			precipitation[i] = comm.getWeatherAtTime(address, time - i * day);
+			precipitation[i] = comm.getWeatherConditionAtTime(address, time - i * day);
 
 			if (temperature[i] < 0)
-				throw new InvalidDataException("invalid temperature data");
+				throw new InvalidAttributeValueException("invalid temperature data");
 			if (precipitation[i] < 0)
-				throw new InvalidDataException("invalid precipitation data");
+				throw new InvalidAttributeValueException("invalid precipitation data");
 		
 			System.out.println("tempdata["+i+"]:"+temperature[i]);
 			System.out.println("precipitation["+i+"]:"+precipitation[i]);

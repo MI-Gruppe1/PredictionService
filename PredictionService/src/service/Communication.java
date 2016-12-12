@@ -1,29 +1,23 @@
 package service;
 
-<<<<<<< HEAD
-=======
-
-import static spark.Spark.get;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.*;
+import javax.management.InvalidAttributeValueException;
 
-import com.google.gson.*;
+import org.json.JSONObject;
+
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import spark.QueryParamsMap;
 
-
->>>>>>> 77993a2e9f0f04021405b33aca6f5a612582c242
+//>>>>>>> 77993a2e9f0f04021405b33aca6f5a612582c242
 public class Communication implements Communicator {
 
 	Prediction prediction;
@@ -33,7 +27,7 @@ public class Communication implements Communicator {
 	String StadtradDBServerAdress = "http://localhost:4567";
 	
 	public Communication(){
-		prediction = new Predictor(this);
+		prediction = new Prediction(this);
 		
 		updateStations();
 	}
@@ -52,7 +46,14 @@ public class Communication implements Communicator {
 	}
 	
 	public JSONObject getPrediction(String stationsname){
-		return createJsonArrayFromDoubleArray(prediction.predict(stationsname, 5));
+		double[] predict = {0,0,0,0,0};
+		try {
+			predict = prediction.predict(stationsname, 5);
+		} catch (InvalidAttributeValueException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return createJsonArrayFromDoubleArray(predict);
 	}
 
 
@@ -150,13 +151,6 @@ public class Communication implements Communicator {
 		}
     	
     	return result;
-	}
-
-
-	@Override
-	public double getWeatherAtTime(String name, Long timeStamp) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 

@@ -1,7 +1,11 @@
 package tests;
 
 import static org.junit.Assert.*;
+
+import javax.management.InvalidAttributeValueException;
+
 import org.junit.Test;
+import service.Predictor;
 
 import service.*;
 
@@ -15,14 +19,14 @@ public class PredictorTestbench {
 		int bikes[] = {10,10,12,10,9,30,30};
 		ComStub stub = new ComStub(temp,prec,bikes);
 		//create Unit to test
-		Predictor UUT = new Predictor(stub);		
+		Predictor UUT = new Prediction(stub);		
 		
 		//test UUT 
 		double[] result = null;
 		
 		try {
 			result = UUT.predict("StationName", 3);
-		} catch (InvalidDataException e) {
+		} catch (InvalidAttributeValueException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

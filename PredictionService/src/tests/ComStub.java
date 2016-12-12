@@ -1,5 +1,7 @@
 package tests;
 
+import org.json.JSONObject;
+
 import service.*;
 
 /**
@@ -62,7 +64,7 @@ public class ComStub implements Communicator {
 	}
 
 	@Override
-	public double getWeatherAtTime(String name, Long timeStamp) {
+	public double getWeatherConditionAtTime(String name, Long timeStamp) {
 		if (name != "StationName") {
 			PC++;
 			return -1;
@@ -74,6 +76,12 @@ public class ComStub implements Communicator {
 		} else
 			result = 0;
 		return result;
+	}
+
+	@Override
+	public JSONObject getPrediction(String stationsname) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
