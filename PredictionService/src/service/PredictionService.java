@@ -6,7 +6,9 @@ public class PredictionService {
 
 	public static void main(String[] args) {
 		Communicator communicator = new Communication();
-		// TODO Auto-generated method stub
+		// Port fuer diesen Service setzen
+		spark.Spark.port(4000);
+		
 		// defines REST Api for predictionService
 				get("/predictionService", (req, res) -> {
 		        	String name = req.queryParams("name");

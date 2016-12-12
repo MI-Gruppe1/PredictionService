@@ -51,7 +51,7 @@ public class Communication implements Communicator {
 			predict = prediction.predict(stationsname, 5);
 		} catch (InvalidAttributeValueException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MailNotification.sendMail(e);
 		}
 		return createJsonArrayFromDoubleArray(predict);
 	}
@@ -147,7 +147,7 @@ public class Communication implements Communicator {
 		
     	} catch (UnirestException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+    		MailNotification.sendMail(e);
 		}
     	
     	return result;
@@ -168,7 +168,7 @@ public class Communication implements Communicator {
 		
     	} catch (UnirestException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+    		MailNotification.sendMail(e);
 		}
     	
     	return result;
@@ -195,7 +195,7 @@ public class Communication implements Communicator {
 		
     	} catch (UnirestException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+    		MailNotification.sendMail(e);
 		}
     	return result;
 	}
@@ -240,7 +240,7 @@ public class Communication implements Communicator {
 
 		} catch (UnirestException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MailNotification.sendMail(e);
 		}
 		return itemsList;	
     }
