@@ -1,13 +1,13 @@
 package tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import javax.management.InvalidAttributeValueException;
 
 import org.junit.Test;
-import service.Predictor;
 
-import service.*;
+import service.Prediction;
+import service.Predictor;
 
 public class PredictorTestbench {
 

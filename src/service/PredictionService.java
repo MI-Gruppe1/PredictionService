@@ -7,7 +7,7 @@ public class PredictionService {
 	public static void main(String[] args) {
 		Communicator communicator = new Communication();
 		// Port fuer diesen Service setzen
-		spark.Spark.port(4000);
+		spark.Spark.port(3000);
 		
 		// defines REST Api for predictionService
 				get("/predictionService", (req, res) -> {

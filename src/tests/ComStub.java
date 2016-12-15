@@ -2,7 +2,7 @@ package tests;
 
 import org.json.JSONObject;
 
-import service.*;
+import service.Communicator;
 
 /**
  * Test Stub for the Communication class returns data given at construction

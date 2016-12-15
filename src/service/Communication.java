@@ -23,10 +23,18 @@ public class Communication implements Communicator {
 	Prediction prediction;
 	Map<String,Double> latMap = new HashMap<String,Double>();
 	Map<String,Double> longMap = new HashMap<String,Double>();
-	String WeatherDBServerAdress = "http://localhost:4567";
-	String StadtradDBServerAdress = "http://localhost:4567";
+	String WeatherDBServerAdress = "http://WeatherDBService:4568";
+	String StadtradDBServerAdress = "http://stadtraddbservice:6000";
 	
 	public Communication(){
+		prediction = new Prediction(this);
+		
+		updateStations();
+	}
+	
+	public Communication(String weatherDBServerAdress, String stadtradDBServerAdress){
+		this.WeatherDBServerAdress = weatherDBServerAdress;
+		this.StadtradDBServerAdress = stadtradDBServerAdress;
 		prediction = new Prediction(this);
 		
 		updateStations();
@@ -159,7 +167,7 @@ public class Communication implements Communicator {
 		double result = 0;
     	
 		try {
-    		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/freeBikesofStationAtSpecTime")
+    		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/weatherConditionAtTime")
 			.queryString("time", timeStamp)
 			.queryString("long", getLongitude(stationsname))
 			.queryString("lat", getLatitude(stationsname)).asString();
