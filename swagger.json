@@ -1,0 +1,23 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "0.0.1",
+        "title": "<StadtRadDBService>"
+    },
+    "paths": {
+        "/predictionService": {
+            "get": {
+                "description": "Return JSON within an double array of integers where the first entry is the predicted value and the following entries are the current amount of bikes and the bikes present in the last hours respectively\n",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ArrayPrediction",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

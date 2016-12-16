@@ -16,8 +16,6 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-
-//>>>>>>> 77993a2e9f0f04021405b33aca6f5a612582c242
 public class Communication implements Communicator {
 
 	Prediction prediction;
@@ -44,10 +42,11 @@ public class Communication implements Communicator {
 		List<Map<String, String>> allStations = getAllStations();
 		Map<String, Double> tmpLatMap = new HashMap<String, Double>();
 		Map<String, Double> tmpLongMap = new HashMap<String, Double>();
-		for(Map<String,String> station : allStations){
-			
-			tmpLatMap.put(station.get("name"), Double.valueOf(station.get("latitude")));
-			tmpLongMap.put(station.get("name"), Double.valueOf(station.get("longitude")));
+		if(allStations.size()>0){
+			for(Map<String,String> station : allStations){
+				tmpLatMap.put(station.get("name"), Double.valueOf(station.get("latitude")));
+				tmpLongMap.put(station.get("name"), Double.valueOf(station.get("longitude")));
+			}			
 		}
 		latMap = tmpLatMap;
 		longMap = tmpLongMap;
@@ -65,75 +64,6 @@ public class Communication implements Communicator {
 	}
 
 
-
-//    
-//	/**
-//	 * This method requests the current amount of free Bikes of a specific Station from the StadtRadDBService.
-//	 * 
-//	 * @param name of the Station.
-//	 * 
-//	 * @return returns amount of free bikes
-//	 */
-//    public Integer getFreeBikesOfStation(String stationName){
-//    	Integer result = 0;
-//    	try {
-//    		HttpResponse<String> stringResponse = Unirest.get("http://localhost:4567" + "/freeBikesOfStation")
-//			.queryString("station_name", stationName)
-//			.asString();
-//    		
-//    		// stringResponse.getBody().toString() ---- Integer als String?
-//    		result = Integer.valueOf(stringResponse.getBody().toString());
-//		} catch (UnirestException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    	return result;
-//    }
-//    
-    
-    
-
-
-    
-//	/**
-//	 * This method requests the current Weather from the WeatherService.
-//	 * 
-//	 * @param ?.
-//	 * 
-//	 * @return returns 
-//	 */
-//    public Integer weatherAtTime(String name, String timeStamp){
-//    	Integer result = 0;
-//    	try {
-//    		time long lat
-//    		HttpResponse<String> stringResponse = Unirest.get("http://localhost:4567" + "/currentWeather").asString();
-//    		
-//    		// result = stringResponse.getBody().toString();
-//		
-//    	} catch (UnirestException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    	return result;
-//    }
-//    
-//    
-//    public JSONArray testRequest() {
-//    	JSONArray result = new JSONArray();
-//    	try {
-//    		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://localhost:4567/predictionService")
-//			.queryString("name", "Mark")
-//			.asJson();
-//    		result = jsonResponse.getBody().getArray();
-//		} catch (UnirestException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    	
-//    	return result;
-//    }
-
-
 	/**
 	 * This method requests the amount of free Bikes of a specific Station at a specific Time from the StadtRadDBService.
 	 * 
@@ -144,18 +74,28 @@ public class Communication implements Communicator {
 	@Override
 	public Integer getFreeBikesofStationAtSpecTime(String stationName, Long timeStamp) {
 		Integer result = 0;
+		Integer tmp = 0;
     	try {
     		HttpResponse<String> stringResponse = Unirest.get(StadtradDBServerAdress + "/freeBikesofStationAtSpecTime")
 			.queryString("station_name", stationName)
 			.queryString("information_timestamp", timeStamp).asString();
     		
-    		
-    		// stringResponse.getBody().toString() ---- Integer als String?
-    		result = Integer.valueOf(stringResponse.getBody().toString());
-		
+    		if(!stringResponse.equals(null) && !stringResponse.getBody().isEmpty()){
+    				tmp = Integer.valueOf(stringResponse.getBody().toString());
+    				if(tmp >= 0){
+    					result = tmp;
+    				}
+    				else {
+    					result = -1;
+    				}
+    		}
+    		else {
+    			result = -1;
+    		}
     	} catch (UnirestException e) {
 			// TODO Auto-generated catch block
     		MailNotification.sendMail(e);
+    		result = -1;
 		}
     	
     	return result;
@@ -165,18 +105,29 @@ public class Communication implements Communicator {
 	@Override
 	public double getWeatherConditionAtTime(String stationsname, Long timeStamp) {
 		double result = 0;
-    	
+    	double tmp = 0;
 		try {
     		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/weatherConditionAtTime")
 			.queryString("time", timeStamp)
 			.queryString("long", getLongitude(stationsname))
 			.queryString("lat", getLatitude(stationsname)).asString();
    
-    		result = Double.valueOf(stringResponse.getBody().toString());
-		
+    		if(!stringResponse.equals(null) && !stringResponse.getBody().isEmpty()){
+    				tmp = Double.valueOf(stringResponse.getBody().toString());
+    				if(tmp >= 0){
+    					result = tmp;
+    				}
+    				else {
+    					result = -1;
+    				}
+    		}
+    		else {
+    			result = -1;
+    		}
     	} catch (UnirestException e) {
 			// TODO Auto-generated catch block
     		MailNotification.sendMail(e);
+    		result = -1;
 		}
     	
     	return result;
@@ -193,17 +144,29 @@ public class Communication implements Communicator {
 	@Override
 	public double getTemperatureAtTime(String stationsname, Long timeStamp) {
 	   	double result = 0;
+	   	double tmp = 0;
     	try {
     		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/temperatureAtTime")
     				.queryString("time", timeStamp)
     				.queryString("long", getLongitude(stationsname))
     				.queryString("lat", getLatitude(stationsname)).asString();
     		
-    		result = Double.valueOf(stringResponse.getBody().toString());
-		
+    		if(!stringResponse.equals(null) && !stringResponse.getBody().isEmpty()){
+				tmp = Double.valueOf(stringResponse.getBody().toString());
+				if(tmp >= 0){
+					result = tmp;
+				}
+				else {
+					result = -1;
+				}
+		}
+		else {
+			result = -1;
+		}
     	} catch (UnirestException e) {
 			// TODO Auto-generated catch block
     		MailNotification.sendMail(e);
+    		result = -1;
 		}
     	return result;
 	}
@@ -238,14 +201,15 @@ public class Communication implements Communicator {
 			response = Unirest.get(StadtradDBServerAdress + "/allStations").asString();
 			// Speichern des Jsons aus dem Requestbody
 			String json = response.getBody();
+			
+			if(!json.isEmpty()){
+				// Format fuer das umwandeln jsons in ein Javaobjekt festelegen
+				Type type = new TypeToken<List<Map<String, String>>>() {
+				}.getType();
 
-			// Format fuer das umwandeln jsons in ein Javaobjekt festelegen
-			Type type = new TypeToken<List<Map<String, String>>>() {
-			}.getType();
-
-			// Aus dem Json ein Javaobjekt erstellen
-			itemsList = gson.fromJson(json, type);
-
+				// Aus dem Json ein Javaobjekt erstellen
+				itemsList = gson.fromJson(json, type);
+			}
 		} catch (UnirestException e) {
 			// TODO Auto-generated catch block
 			MailNotification.sendMail(e);
@@ -254,3 +218,5 @@ public class Communication implements Communicator {
     }
     
 }
+
+

@@ -10,7 +10,7 @@ WORKDIR /code
 ADD pom.xml /code/pom.xml
 
 # Adding source folder
-ADD PredictionService/src /code/src
+ADD /src /code/src
 
 # Load all dependencies and create a fat jar
 RUN ["mvn", "install"]

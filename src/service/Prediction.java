@@ -14,9 +14,7 @@ public class Prediction implements Predictor{
 	private Communicator comm;
 
 	public Prediction(Communicator comm) {
-
 		this.comm = comm;
-
 	}
 
 	/**
