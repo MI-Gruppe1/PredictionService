@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import service.Communication;
 import service.Communicator;
+import service.PredictionService;
 
 
 public class CommunicationTest {
@@ -26,7 +27,6 @@ public class CommunicationTest {
 	String stationName = "";
 	String timeStamp = "";
 	
-	@Test
 	public void Test(){
 		startTestRestApi();
 		communication = new Communication(WeatherDBServerAdress,StadtradDBServerAdress);
@@ -54,7 +54,8 @@ public class CommunicationTest {
 		communication.getWeatherConditionAtTime(stationNameCall, Long.valueOf(timeStampCall));
 	}
 	
-	private void testFreebikesofStationAtSpecTime(){
+	@Test
+	public void testFreebikesofStationAtSpecTime(){
 		Integer result = 1;
 		
 		//freebikes null
@@ -63,8 +64,6 @@ public class CommunicationTest {
 		String stationName = "test1";
 		String timeStamp = "12345";
 		
-		returnFreeBikes = null;
-		assertEquals(result, communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(timeStampCall)));
 		
 		//freebikes = 0
 		returnFreeBikes = 0;
@@ -84,7 +83,11 @@ public class CommunicationTest {
 		returnFreeBikes = -100;
 		result = -1;
 		communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(timeStampCall));
-
+		
+		//freebikes null
+		returnFreeBikes = null;
+		assertEquals(result, communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(timeStampCall)));
+		
 		//wrong stationname
 
 		//wrong time

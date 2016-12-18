@@ -1,6 +1,6 @@
 package tests;
 
-import org.json.JSONObject;
+import com.google.gson.JsonArray;
 
 import service.Communicator;
 
@@ -79,7 +79,7 @@ public class ComStub implements Communicator {
 	}
 
 	@Override
-	public JSONObject getPrediction(String stationsname) {
+	public JsonArray getPrediction(String stationsname) {
 		// TODO Auto-generated method stub
 		return null;
 	}

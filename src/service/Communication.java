@@ -8,9 +8,8 @@ import java.util.Map;
 
 import javax.management.InvalidAttributeValueException;
 
-import org.json.JSONObject;
-
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
@@ -26,8 +25,6 @@ public class Communication implements Communicator {
 	
 	public Communication(){
 		prediction = new Prediction(this);
-		
-		updateStations();
 	}
 	
 	public Communication(String weatherDBServerAdress, String stadtradDBServerAdress){
@@ -52,8 +49,11 @@ public class Communication implements Communicator {
 		longMap = tmpLongMap;
 	}
 	
-	public JSONObject getPrediction(String stationsname){
+	public JsonArray getPrediction(String stationsname){
 		double[] predict = {0,0,0,0,0};
+		if(longMap.isEmpty() && latMap.isEmpty()){
+			updateStations();
+		}
 		try {
 			predict = prediction.predict(stationsname, 5);
 		} catch (InvalidAttributeValueException e) {
@@ -186,12 +186,22 @@ public class Communication implements Communicator {
 	 * 
 	 * @return returns JSONObject for array of doubles
 	 */
-    private static JSONObject createJsonArrayFromDoubleArray(double[] doubleArray){
-    	JSONObject jObject = new JSONObject();
+    public static JsonArray createJsonArrayFromDoubleArray(double[] doubleArray){
+    	JsonArray jarray = new JsonArray();
     	
-    	jObject.put("doubles", doubleArray);
-    	return jObject;
+    	for(int i = 0; i < doubleArray.length;i++){
+    		jarray.add(doubleArray[i]);
+    	}
+    	return jarray;
     }
+
+	
+//    private static JSONObject createJsonArrayFromDoubleArray(double[] doubleArray){
+//    	JSONObject jObject = new JSONObject();
+//    	
+//    	jObject.put("doubles", doubleArray);
+//    	return jObject;
+//    }
     
     private List<Map<String, String>> getAllStations(){
     	Gson gson = new Gson();
