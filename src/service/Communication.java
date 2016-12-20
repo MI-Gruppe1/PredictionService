@@ -55,7 +55,7 @@ public class Communication implements Communicator {
 			updateStations();
 		}
 		try {
-			predict = prediction.predict(stationsname, 5);
+			predict = prediction.predict(stationsname, 3);
 		} catch (InvalidAttributeValueException e) {
 			// TODO Auto-generated catch block
 			MailNotification.sendMail(e);
