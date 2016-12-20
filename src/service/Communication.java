@@ -109,7 +109,7 @@ public class Communication implements Communicator {
 		try {
     		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/weatherConditionAtTime")
 			.queryString("time", timeStamp)
-			.queryString("long", getLongitude(stationsname))
+			.queryString("lon", getLongitude(stationsname))
 			.queryString("lat", getLatitude(stationsname)).asString();
    
     		if(!stringResponse.equals(null) && !stringResponse.getBody().isEmpty()){
@@ -148,7 +148,7 @@ public class Communication implements Communicator {
     	try {
     		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/temperatureAtTime")
     				.queryString("time", timeStamp)
-    				.queryString("long", getLongitude(stationsname))
+    				.queryString("lon", getLongitude(stationsname))
     				.queryString("lat", getLatitude(stationsname)).asString();
     		
     		if(!stringResponse.equals(null) && !stringResponse.getBody().isEmpty()){
@@ -157,7 +157,7 @@ public class Communication implements Communicator {
 					result = tmp;
 				}
 				else {
-					result = -1;
+					result = -300;
 				}
 		}
 		else {
