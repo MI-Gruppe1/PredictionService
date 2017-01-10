@@ -26,8 +26,8 @@ public class Communication implements Communicator {
 	Prediction prediction;
 	Map<String,Double> latMap = new HashMap<String,Double>();
 	Map<String,Double> longMap = new HashMap<String,Double>();
-	String WeatherDBServerAdress = "http://localhost:4568";
-	String StadtradDBServerAdress = "http://localhost:6000";
+	String WeatherDBServerAdress = "http://WeatherDBService:4568";
+	String StadtradDBServerAdress = "http://stadtraddbservice:6000";
 	
 	public Communication(){
 		prediction = new Prediction(this);
@@ -1136,6 +1136,7 @@ public class Communication implements Communicator {
 	 */
 	@Override
 	public Integer getFreeBikesofStationAtSpecTime(String stationName, Long timeStamp) {
+		System.out.println(StadtradDBServerAdress+"/freeBikesofStationAtSpecTime?station_name="+stationName+"&information_timestamp="+timeStamp);
 		Integer result = 0;
 		Integer tmp = 0;
     	try {
@@ -1172,9 +1173,9 @@ public class Communication implements Communicator {
     	return result;
 	}
 
-
 	@Override
 	public double getWeatherConditionAtTime(String stationsname, Long timeStamp) {
+		System.out.println(WeatherDBServerAdress+"/weatherConditionAtTime?time="+timeStamp+"&lon="+getLongitude(stationsname)+"&lat="+getLatitude(stationsname));
 		double result = 0;
     	double tmp = 0;
 		try {
@@ -1222,6 +1223,8 @@ public class Communication implements Communicator {
 
 	@Override
 	public double getTemperatureAtTime(String stationsname, Long timeStamp) {
+		System.out.println(WeatherDBServerAdress+"/temperatureAtTime?time="+timeStamp+"&lon="+getLongitude(stationsname)+"&lat="+getLatitude(stationsname));
+			
 	   	double result = 0;
 	   	double tmp = 0;
     	try {
