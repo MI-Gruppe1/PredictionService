@@ -10,7 +10,7 @@ WORKDIR /code
 ADD pom.xml /code/pom.xml
 
 # Adding source folder
-ADD /src /code/src
+ADD /target /code/target
 
 # Load all dependencies and create a fat jar
 RUN ["mvn", "install"]

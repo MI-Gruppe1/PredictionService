@@ -6,11 +6,22 @@ import javax.management.InvalidAttributeValueException;
 
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
+
 import service.Prediction;
 import service.Predictor;
 
 public class PredictorTestbench {
 
+    public static JsonArray createJsonArrayFromDoubleArray(double[] doubleArray){
+    	JsonArray jarray = new JsonArray();
+    	
+    	for(int i = 0; i < doubleArray.length;i++){
+    		jarray.add(doubleArray[i]);
+    	}
+    	return jarray;
+    }
+	
 	@Test // Sanity Test (Does it work at all
 	public void T0() {
 		// create Test Data Stub
@@ -25,16 +36,14 @@ public class PredictorTestbench {
 		double[] result = null;
 
 		try {
-			result = UUT.predict("StationName", 3);
+			result = UUT.predict("StationName",3);
 		} catch (InvalidAttributeValueException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (result[0] != 8) {
-			System.out.println(result[0]);
-			fail("Result unexpected");
-
-		}
+		
+		JsonArray jarray = createJsonArrayFromDoubleArray(result);
+		System.out.println(jarray);
 		return;
 	}
 

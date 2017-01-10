@@ -2,6 +2,8 @@ package service;
 
 import static spark.Spark.get;
 
+import javax.management.InvalidAttributeValueException;
+
 public class PredictionService {
 
 	public static void main(String[] args) {
@@ -11,9 +13,9 @@ public class PredictionService {
 		
 		// defines REST Api for predictionService
 				get("/predictionService", (req, res) -> {
-		        	String name = req.queryParams("name");
-		        	return communicator.getPrediction(name);
-		        });
+						String name = req.queryParams("name");
+		        		return communicator.getPrediction(name);		        			
+		        
+				});
 	}
-
 }

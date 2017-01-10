@@ -17,84 +17,7 @@ public class Prediction implements Predictor {
 		this.comm = comm;
 	}
 
-	/**
-	 * This method calculates the predicted value of bikes present at a station
-	 * in the next hour based on the weather, precipitation and bikes present at
-	 * the same time and weekday for the past two weeks at this station.
-	 * 
-	 * @param address
-	 *            The address of the station for which the prediction should be
-	 *            made.
-	 * 
-	 * @return returns an array of integers where the first entry is the
-	 *         predicted value and the following 5 entries are the current
-	 *         amount of bikes and the bikes present in the last 4 hours
-	 *         respectively
-	 */
-	private double[] predict(String address) {
-		Date now = new Date();
-		long time = now.getTime();
-		long day = 24 * 60 * 60 * 1000;// one day in milliseconds
-		long hour = 60 * 60 * 1000;// one hour in milliseconds
-		double result[] = { 0, 0, 0, 0, 0, 0 };
-		double weightA = 0;
-		double weightB = 0;
-
-		// TODO get Inputs for Address
-
-		double bikes[] = { 0, 0, 0, 0, 0 };
-		double temperature[] = { 0, 0, 0 };
-		double precipitation[] = { 0, 0, 0 };
-
-		bikes[0] = comm.getFreeBikesofStationAtSpecTime(address, time);
-		bikes[1] = comm.getFreeBikesofStationAtSpecTime(address, (time - day));
-		bikes[2] = comm.getFreeBikesofStationAtSpecTime(address, (time - day - hour));
-		bikes[3] = comm.getFreeBikesofStationAtSpecTime(address, (time - 2 * day));
-		bikes[4] = comm.getFreeBikesofStationAtSpecTime(address, (time - 2 * day - hour));
-
-		temperature[0] = comm.getTemperatureAtTime(address, time);
-		temperature[1] = comm.getTemperatureAtTime(address, (time - day));
-		temperature[2] = comm.getTemperatureAtTime(address, (time - 2 * day));
-
-		precipitation[0] = comm.getWeatherConditionAtTime(address, time);
-		precipitation[1] = comm.getWeatherConditionAtTime(address, (time - day));
-		precipitation[2] = comm.getWeatherConditionAtTime(address, (time - 2 * day));
-
-		for (int i = 1; i < 6; i++) {
-			result[i] = comm.getFreeBikesofStationAtSpecTime(address, time - i * hour);
-		}
-
-		// weather comparison
-		// smaller (absolute) difference gets higher weight in prediction
-		if (Math.pow((temperature[0] - temperature[1]), 2) <= Math.pow((temperature[0] - temperature[2]), 2)) {
-			weightA += 0.33;
-		} else {
-			weightB += 0.33;
-		}
-		// precipitation comparison
-		// smaller difference leads to higher weight for the dataset
-		if (Math.pow((precipitation[0] - precipitation[1]), 2) <= Math.pow((precipitation[0] - precipitation[2]), 2)) {
-			weightA += 0.33;
-		} else {
-			weightB += 0.33;
-		}
-		// bike availability comparison
-		// smaller differences in availability leads to higher weight for the
-		// dataset in the calculation
-		if (Math.pow((bikes[0] - bikes[1]), 2) <= Math.pow((bikes[0] - bikes[3]), 2)) {
-			weightA += 0.33;
-		} else {
-			weightB += 0.33;
-		}
-		// calculate gradient based on precalcualted weight
-		// current+(gradient) gradient = sum of weights multiplied with
-		// gradients
-		// since there are no "half" bikes we roud down
-		result[0] = (int) bikes[0] + (weightA * (bikes[1] - bikes[2]) + weightB * (bikes[3] - bikes[4]));
-
-		return result;
-	}
-
+	
 	/**
 	 * This method calculates the predicted value of bikes present at a station
 	 * in the next hour based on the weather, precipitation and bikes present at
@@ -216,18 +139,8 @@ public class Prediction implements Predictor {
 			gradient += (bikes[i * 2 - 1] - bikes[i * 2]) * weight[i - 1];
 
 		}
-		result[0] = bikes[0] + gradient;
-		if (result[0] < 0) {
-			result[0] = 0;
-		}
-
-		//System.out.println(result[0]);
-		result[0] = Math.floor(result[0]);
-		//System.out.println(result[0]);
-		/*
-		 * for(int i = 0; i<result.length;i++){ System.out.println(result[i]); }
-		 */
-
+		result[0] =  gradient;
+		
 		return result;
 	}
 

@@ -6,6 +6,9 @@ import static spark.Spark.get;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import service.Communication;
 import service.Communicator;
@@ -27,26 +30,81 @@ public class CommunicationTest {
 	String stationName = "";
 	String timeStamp = "";
 	
+	@Test
 	public void Test(){
+		System.out.println("start testing");
 		startTestRestApi();
+		
+		System.out.println("testfreebikes - freebikes");
+		
 		communication = new Communication(WeatherDBServerAdress,StadtradDBServerAdress);
+		System.out.println("created Testsetting");
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		testlauf();
+		
 	}
 	
 	private void testlauf(){
-		testPrediction();
-		testFreebikesofStationAtSpecTime();
-		testTemperatureAtTime();
-		testWeatherConditionAtTime();
+//		testPrediction();
+//		testFreebikesofStationAtSpecTime();
+//		testTemperatureAtTime();
+//		testWeatherConditionAtTime();
+	}
+	
+	private void all(){
+		String stationNameCall = "test1";
+		String timeStampCall = "12345";
+		String stationName = "test1";
+		String timeStamp = "12345";
+		
+		double temp[] = { 10, 10, 11, 30 };
+		double prec[] = { 0.5, 0.5, 0.4, 0 };
+		int bikes[] = { 10, 10, 12, 10, 9, 30, 30, 10, 11, 12, 13, 14 };
+		ComStub stub = new ComStub(temp, prec, bikes);
+		
+		Integer returnFreeBikes = 10;
+		//Gson returnAllStations = [{ "name": "2397 Alsterdorfer Straße/Fuhlsbüttler Straße", "latitude": 53.62,"longitude": 10.032 }];
+		double returnTemperaturAtSpecificTime = 10.5;
+		double returnWeatherConditionAtSpecificTime = 0.5;
+		
+		
+		try {
+			HttpResponse<String> stringResponse = Unirest.get("http://localhost:3000" + "/predictionService")
+					.queryString("name", stationNameCall).asString();
+		} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void testPrediction(){
+		String stationNameCall = "test1";
+		String timeStampCall = "12345";
+		String stationName = "test1";
+		String timeStamp = "12345";
 		
+		double temp[] = { 10, 10, 11, 30 };
+		double prec[] = { 0.5, 0.5, 0.4, 0 };
+		int bikes[] = { 10, 10, 12, 10, 9, 30, 30, 10, 11, 12, 13, 14 };
+		ComStub stub = new ComStub(temp, prec, bikes);
 		
-		communication.getPrediction(stationNameCall);
+		Integer returnFreeBikes = 10;
+		Gson returnAllStations = new Gson();
+		double returnTemperaturAtSpecificTime = 10.5;
+		double returnWeatherConditionAtSpecificTime = 0.5;
+		
+		System.out.println(communication.getPrediction(stationNameCall));
 	}
 	
 	private void testTemperatureAtTime(){
+		String timeStampCall = "12345";
+		String stationNameCall = "test1";
+		
 		communication.getTemperatureAtTime(stationNameCall, Long.valueOf(timeStampCall));
 	}
 	
@@ -54,9 +112,8 @@ public class CommunicationTest {
 		communication.getWeatherConditionAtTime(stationNameCall, Long.valueOf(timeStampCall));
 	}
 	
-	@Test
 	public void testFreebikesofStationAtSpecTime(){
-		Integer result = 1;
+		Integer result = 0;
 		
 		//freebikes null
 		String stationNameCall = "test1";
@@ -68,33 +125,37 @@ public class CommunicationTest {
 		//freebikes = 0
 		returnFreeBikes = 0;
 		assertEquals(result, communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(timeStampCall)));
+		System.out.println("testfreebikes - freebikes = 0");
 		
 		//freebikes > 0
 		returnFreeBikes = 100;
 		result = 100;
 		assertEquals(result, communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(timeStampCall)));
-		
+		System.out.println("testfreebikes - freebikes > 0");		
 		//freebikes -1
 		returnFreeBikes = -1;
 		result = -1;
 		assertEquals(result, communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(timeStampCall)));
+		System.out.println("testfreebikes - freebikes = -1");
 		
 		//freebikes <0
 		returnFreeBikes = -100;
 		result = -1;
 		communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(timeStampCall));
-		
+		System.out.println("testfreebikes - freebikes < 0");
 		//freebikes null
 		returnFreeBikes = null;
 		assertEquals(result, communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(timeStampCall)));
 		
+		System.out.println("testfreebikes - freebikes = null");
 		//wrong stationname
-
+		assertEquals(result, communication.getFreeBikesofStationAtSpecTime("abc", Long.valueOf(timeStampCall)));
 		//wrong time
-		
+		assertEquals(result, communication.getFreeBikesofStationAtSpecTime(stationNameCall, Long.valueOf(1)));
 		//no response
 		
 		//wrong datatype
+		System.out.println("testfreebikes - done");
 	}
 	
 	

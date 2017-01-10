@@ -9,6 +9,7 @@ package service;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 /**
@@ -16,7 +17,7 @@ import org.apache.commons.mail.SimpleEmail;
  */
 public class MailNotification {
 	  private static final String SMTP_HOST = "smtp.gmail.com";
-	  private static final int SMTP_PORT = 465;
+	  private static final int SMTP_PORT = 465;//465 - 587;
 	  
 	  private static final String USERNAME = "mi.predictionservice@gmail.com";
 	  private static final String PASSWORD = "miws2016";
@@ -28,10 +29,11 @@ public class MailNotification {
 		    try {
 		    	SimpleEmail email = new SimpleEmail();
 			    email.setHostName(SMTP_HOST);
-			    email.setAuthentication(USERNAME, PASSWORD);
+			   //email.setAuthentication(USERNAME, PASSWORD);
 			    email.setDebug(true);
 			    email.setSmtpPort(SMTP_PORT);
-			    email.setSSLOnConnect(true);
+			    email.setAuthenticator(new DefaultAuthenticator("username", "password"));
+				email.setSSLOnConnect(true);
 				email.addTo(USERNAME);
 				email.setFrom(USERNAME, "PredictionService");
 			    email.setSubject("Exception");

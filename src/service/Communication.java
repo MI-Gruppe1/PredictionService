@@ -20,8 +20,8 @@ public class Communication implements Communicator {
 	Prediction prediction;
 	Map<String,Double> latMap = new HashMap<String,Double>();
 	Map<String,Double> longMap = new HashMap<String,Double>();
-	String WeatherDBServerAdress = "http://WeatherDBService:4568";
-	String StadtradDBServerAdress = "http://stadtraddbservice:6000";
+	String WeatherDBServerAdress = "http://localhost:4568";
+	String StadtradDBServerAdress = "http://localhost:6000";
 	
 	public Communication(){
 		prediction = new Prediction(this);
@@ -32,7 +32,6 @@ public class Communication implements Communicator {
 		this.StadtradDBServerAdress = stadtradDBServerAdress;
 		prediction = new Prediction(this);
 		
-		updateStations();
 	}
 	
 	private void updateStations(){
@@ -43,7 +42,7 @@ public class Communication implements Communicator {
 			for(Map<String,String> station : allStations){
 				tmpLatMap.put(station.get("name"), Double.valueOf(station.get("latitude")));
 				tmpLongMap.put(station.get("name"), Double.valueOf(station.get("longitude")));
-			}			
+			}
 		}
 		latMap = tmpLatMap;
 		longMap = tmpLongMap;
@@ -80,19 +79,27 @@ public class Communication implements Communicator {
 			.queryString("station_name", stationName)
 			.queryString("information_timestamp", timeStamp).asString();
     		
-    		if(!stringResponse.equals(null) && !stringResponse.getBody().isEmpty()){
-    				tmp = Integer.valueOf(stringResponse.getBody().toString());
-    				if(tmp >= 0){
-    					result = tmp;
-    				}
-    				else {
+    		if((stringResponse != null) && !stringResponse.getBody().isEmpty()){
+    				if(stringResponse.getBody().contains("404 Not found")){
     					result = -1;
+    				}
+    				else if(stringResponse.getBody().contains("400 Bad Request")){
+    					result = -1;
+    				}
+    				else{
+    					tmp = Integer.valueOf(stringResponse.getBody().toString());
+        				if(tmp >= 0){
+        					result = tmp;
+        				}
+        				else {
+        					result = -1;
+        				}
     				}
     		}
     		else {
     			result = -1;
     		}
-    	} catch (UnirestException e) {
+    	} catch (Exception e) {
 			// TODO Auto-generated catch block
     		MailNotification.sendMail(e);
     		result = -1;
@@ -112,19 +119,27 @@ public class Communication implements Communicator {
 			.queryString("lon", getLongitude(stationsname))
 			.queryString("lat", getLatitude(stationsname)).asString();
    
-    		if(!stringResponse.equals(null) && !stringResponse.getBody().isEmpty()){
-    				tmp = Double.valueOf(stringResponse.getBody().toString());
+    		if((stringResponse != null) && (stringResponse.getBody().isEmpty())){
+    			if(stringResponse.getBody().contains("404 Not found")){
+					result = -1;
+				}
+				else if(stringResponse.getBody().contains("400 Bad Request")){
+					result = -1;
+				}
+				else{	
+    			tmp = Double.valueOf(stringResponse.getBody().toString());
     				if(tmp >= 0){
     					result = tmp;
     				}
     				else {
     					result = -1;
     				}
+				}
     		}
     		else {
     			result = -1;
     		}
-    	} catch (UnirestException e) {
+    	} catch (Exception e) {
 			// TODO Auto-generated catch block
     		MailNotification.sendMail(e);
     		result = -1;
@@ -151,19 +166,27 @@ public class Communication implements Communicator {
     				.queryString("lon", getLongitude(stationsname))
     				.queryString("lat", getLatitude(stationsname)).asString();
     		
-    		if(!stringResponse.equals(null) && !stringResponse.getBody().isEmpty()){
-				tmp = Double.valueOf(stringResponse.getBody().toString());
+    		if((stringResponse != null) && !stringResponse.getBody().isEmpty()){
+    			if(stringResponse.getBody().contains("404 Not found")){
+					result = -1;
+				}
+				else if(stringResponse.getBody().contains("400 Bad Request")){
+					result = -1;
+				}
+				else{
+    			tmp = Double.valueOf(stringResponse.getBody().toString());
 				if(tmp >= 0){
 					result = tmp;
 				}
 				else {
 					result = -300;
 				}
+			}
 		}
 		else {
 			result = -1;
 		}
-    	} catch (UnirestException e) {
+    	} catch (Exception  e) {
 			// TODO Auto-generated catch block
     		MailNotification.sendMail(e);
     		result = -1;
@@ -196,13 +219,6 @@ public class Communication implements Communicator {
     }
 
 	
-//    private static JSONObject createJsonArrayFromDoubleArray(double[] doubleArray){
-//    	JSONObject jObject = new JSONObject();
-//    	
-//    	jObject.put("doubles", doubleArray);
-//    	return jObject;
-//    }
-    
     private List<Map<String, String>> getAllStations(){
     	Gson gson = new Gson();
     	List<Map<String, String>> itemsList = new ArrayList<Map<String, String>>();
@@ -212,21 +228,26 @@ public class Communication implements Communicator {
 			// Speichern des Jsons aus dem Requestbody
 			String json = response.getBody();
 			
-			if(!json.isEmpty()){
-				// Format fuer das umwandeln jsons in ein Javaobjekt festelegen
-				Type type = new TypeToken<List<Map<String, String>>>() {
-				}.getType();
-
-				// Aus dem Json ein Javaobjekt erstellen
-				itemsList = gson.fromJson(json, type);
-			}
-		} catch (UnirestException e) {
+			if(json!= null && !json.isEmpty()){
+				if(json.contains("404 Not found")){
+					return itemsList;
+				}
+				else if(json.contains("400 Bad Request")){
+					return itemsList;
+				}
+				else{
+					// Format fuer das umwandeln jsons in ein Javaobjekt festelegen
+					Type type = new TypeToken<List<Map<String, String>>>() {
+					}.getType();
+	
+					// Aus dem Json ein Javaobjekt erstellen
+					itemsList = gson.fromJson(json, type);
+					}
+				}
+		} catch (Exception  e) {
 			// TODO Auto-generated catch block
 			MailNotification.sendMail(e);
 		}
 		return itemsList;	
     }
-    
 }
-
-
