@@ -8,4 +8,5 @@ public interface Communicator{
 	public double getTemperatureAtTime(String stationsname, Long timeStamp);
 	public JsonArray getPrediction(String stationsname);
 	public double getWeatherConditionAtTime(String stationsname, Long timestamp);	
+	public void updateStations();
 }

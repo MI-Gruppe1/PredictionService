@@ -3,9 +3,17 @@ package tests;
 import static org.junit.Assert.assertEquals;
 import static spark.Spark.get;
 
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -16,12 +24,14 @@ import service.PredictionService;
 
 
 public class CommunicationTest {
+
 	String WeatherDBServerAdress = "http://localhost:4567";
 	String StadtradDBServerAdress = "http://localhost:4567";
 	Communicator communication;
 	
+	
 	Integer returnFreeBikes;
-	Gson returnAllStations = new Gson();
+	String returnAllStations = "";
 	double returnTemperaturAtSpecificTime;
 	double returnWeatherConditionAtSpecificTime;
 	
@@ -34,6 +44,8 @@ public class CommunicationTest {
 	public void Test(){
 		System.out.println("start testing");
 		startTestRestApi();
+		
+		
 		
 		System.out.println("testfreebikes - freebikes");
 		
@@ -50,34 +62,32 @@ public class CommunicationTest {
 	}
 	
 	private void testlauf(){
+//		all();
 //		testPrediction();
-//		testFreebikesofStationAtSpecTime();
+		testFreebikesofStationAtSpecTime();
 //		testTemperatureAtTime();
 //		testWeatherConditionAtTime();
 	}
 	
 	private void all(){
-		String stationNameCall = "test1";
-		String timeStampCall = "12345";
-		String stationName = "test1";
-		String timeStamp = "12345";
+		String stationNameCall = "2397 Alsterdorfer Straße/Fuhlsbüttler Straße";
+		timeStampCall = "12345";
+		stationName = "2397 Alsterdorfer Straße/Fuhlsbüttler Straße";
+		timeStamp = "12345";
 		
-		double temp[] = { 10, 10, 11, 30 };
-		double prec[] = { 0.5, 0.5, 0.4, 0 };
-		int bikes[] = { 10, 10, 12, 10, 9, 30, 30, 10, 11, 12, 13, 14 };
-		ComStub stub = new ComStub(temp, prec, bikes);
+		returnFreeBikes = 10;
+		returnAllStations = "[{ \"name\": \"2397 Alsterdorfer Straße/Fuhlsbüttler Straße\", \"latitude\": 53.62,\"longitude\": 10.032 }]";
 		
-		Integer returnFreeBikes = 10;
-		//Gson returnAllStations = [{ "name": "2397 Alsterdorfer Straße/Fuhlsbüttler Straße", "latitude": 53.62,"longitude": 10.032 }];
-		double returnTemperaturAtSpecificTime = 10.5;
-		double returnWeatherConditionAtSpecificTime = 0.5;
+		returnTemperaturAtSpecificTime = 10.5;
+		returnWeatherConditionAtSpecificTime = 0.5;
 		
-		
+		// Format fuer das umwandeln jsons in ein Javaobjekt festelegen
 		try {
 			HttpResponse<String> stringResponse = Unirest.get("http://localhost:3000" + "/predictionService")
 					.queryString("name", stationNameCall).asString();
 		} catch (UnirestException e) {
 			// TODO Auto-generated catch block
+			System.out.println("Exception in all()");
 			e.printStackTrace();
 		}
 	}

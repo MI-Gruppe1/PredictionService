@@ -23,9 +23,10 @@ public class MailNotification {
 	  private static final String PASSWORD = "miws2016";
 	  
 	  static void sendMail(Exception e) {
+		  e.printStackTrace();
 		  StringWriter sw = new StringWriter();
 		  PrintWriter pw = new PrintWriter(sw);
-		  e.printStackTrace(pw);
+		//  e.printStackTrace(pw);
 		    try {
 		    	SimpleEmail email = new SimpleEmail();
 			    email.setHostName(SMTP_HOST);
@@ -41,7 +42,6 @@ public class MailNotification {
 			    email.send();
 			} catch (EmailException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
 	  }
 }

@@ -84,4 +84,10 @@ public class ComStub implements Communicator {
 		return null;
 	}
 
+	@Override
+	public void updateStations() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

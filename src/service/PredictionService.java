@@ -14,8 +14,8 @@ public class PredictionService {
 		// defines REST Api for predictionService
 				get("/predictionService", (req, res) -> {
 						String name = req.queryParams("name");
-		        		return communicator.getPrediction(name);		        			
-		        
+						System.out.println("Stationsname: " + name);
+		        		return communicator.getPrediction(name);
 				});
 	}
 }
