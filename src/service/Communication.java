@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 import javax.management.InvalidAttributeValueException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONArray;
 
 import com.google.gson.Gson;
@@ -26,12 +28,14 @@ public class Communication implements Communicator {
 	Prediction prediction;
 	Map<String,Double> latMap = new HashMap<String,Double>();
 	Map<String,Double> longMap = new HashMap<String,Double>();
-	String WeatherDBServerAdress = "http://WeatherDBService:4568";
+	String WeatherDBServerAdress = "http://WeatherDBService:4567";
 	String StadtradDBServerAdress = "http://stadtraddbservice:6000";
 	
 	public Communication(){
 		prediction = new Prediction(this);
 	}
+	
+	
 	
 	public Communication(String weatherDBServerAdress, String stadtradDBServerAdress){
 		this.WeatherDBServerAdress = weatherDBServerAdress;
@@ -1140,29 +1144,46 @@ public class Communication implements Communicator {
 		Integer result = 0;
 		Integer tmp = 0;
     	try {
-    		HttpResponse<String> stringResponse = Unirest.get(StadtradDBServerAdress + "/freeBikesofStationAtSpecTime")
-			.queryString("station_name", stationName)
-			.queryString("information_timestamp", timeStamp).asString();
+    		URIBuilder b  = new URIBuilder(StadtradDBServerAdress + "/freeBikesofStationAtSpecTime");
+    		b.addParameter("information_timestamp", timeStamp.toString());
+    		b.addParameter("station_name", stationName);
+    		
+    		String url = b.build().toString();
+    		System.out.println(url);
+    		HttpResponse<String> stringResponse = Unirest.get(url).asString();
+//    				.queryString("information_timestamp", timeStamp)
+//    				.field("station_name", stationName);
+
+    		System.out.println("statustext: "+stringResponse.getStatusText());
+    		System.out.println("---stringResponse.toString()--");
+    		System.out.println(stringResponse.toString());
+    		System.out.println("-----");
     		
     		if((stringResponse != null) && !stringResponse.getBody().isEmpty()){
     				if(stringResponse.getBody().contains("404 Not found")){
+    					System.out.println("bikes -404 not foundt");
     					result = -1;
     				}
     				else if(stringResponse.getBody().contains("400 Bad Request")){
+    					System.out.println("bikes - 400 bad request");
     					result = -1;
     				}
     				else{
+    					
     					tmp = Integer.valueOf(stringResponse.getBody().toString());
-        				if(tmp >= 0){
+        				
+    					if(tmp >= 0){
         					result = tmp;
         				}
         				else {
+        					System.out.println("else; tmp: "+ tmp);
         					result = -1;
         				}
     				}
     		}
     		else {
     			result = -1;
+    			System.out.println("bikes - null or empty");
     		}
     	} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1179,16 +1200,32 @@ public class Communication implements Communicator {
 		double result = 0;
     	double tmp = 0;
 		try {
-    		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/weatherConditionAtTime")
-			.queryString("time", timeStamp)
-			.queryString("lon", getLongitude(stationsname))
-			.queryString("lat", getLatitude(stationsname)).asString();
-   
+			URIBuilder b  = new URIBuilder(WeatherDBServerAdress + "/weatherConditionAtTime");
+    		b.addParameter("time", timeStamp.toString());
+    		b.addParameter("lon", ""+getLongitude(stationsname));
+    		b.addParameter("lat", ""+getLatitude(stationsname));
+    		
+    		String url = b.build().toString();
+    		System.out.println(url);
+    		HttpResponse<String> stringResponse = Unirest.get(url).asString();
+			
+    		System.out.println("statustext: "+stringResponse.getStatusText());
+    		System.out.println("---stringResponse.toString()--");
+    		System.out.println(stringResponse.toString());
+    		System.out.println("-----");
+//			
+//    		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/weatherConditionAtTime")
+//			.queryString("time", timeStamp)
+//			.queryString("lon", getLongitude(stationsname))
+//			.queryString("lat", getLatitude(stationsname)).asString();
+//   
     		if((stringResponse != null) && (stringResponse.getBody().isEmpty())){
     			if(stringResponse.getBody().contains("404 Not found")){
+    				System.out.println("weather - 404 not found");
 					result = -1;
 				}
 				else if(stringResponse.getBody().contains("400 Bad Request")){
+					System.out.println("weather - 400 bad request");
 					result = -1;
 				}
 				else{	
@@ -1197,11 +1234,13 @@ public class Communication implements Communicator {
     					result = tmp;
     				}
     				else {
+    					System.out.println("weather - else");
     					result = -1;
     				}
 				}
     		}
     		else {
+    			System.out.println("weather - empty or null");
     			result = -1;
     		}
     	} catch (Exception e) {
@@ -1228,16 +1267,32 @@ public class Communication implements Communicator {
 	   	double result = 0;
 	   	double tmp = 0;
     	try {
-    		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/temperatureAtTime")
-    				.queryString("time", timeStamp)
-    				.queryString("lon", getLongitude(stationsname))
-    				.queryString("lat", getLatitude(stationsname)).asString();
+    		URIBuilder b  = new URIBuilder(WeatherDBServerAdress + "/temperatureAtTime");
+    		b.addParameter("time", timeStamp.toString());
+    		b.addParameter("lon", ""+getLongitude(stationsname));
+    		b.addParameter("lat", ""+getLatitude(stationsname));
     		
+    		String url = b.build().toString();
+    		System.out.println(url);
+    		HttpResponse<String> stringResponse = Unirest.get(url).asString();
+    		
+    		System.out.println("statustext: "+stringResponse.getStatusText());
+    		System.out.println("---stringResponse.toString()--");
+    		System.out.println(stringResponse.toString());
+    		System.out.println("-----");
+    		
+//    		HttpResponse<String> stringResponse = Unirest.get(WeatherDBServerAdress + "/temperatureAtTime")
+//    				.queryString("time", timeStamp)
+//    				.queryString("lon", getLongitude(stationsname))
+//    				.queryString("lat", getLatitude(stationsname)).asString();
+//    		
     		if((stringResponse != null) && !stringResponse.getBody().isEmpty()){
     			if(stringResponse.getBody().contains("404 Not found")){
+    				System.out.println("weathercondition - 404 bad request");
 					result = -1;
 				}
 				else if(stringResponse.getBody().contains("400 Bad Request")){
+					System.out.println("weathercondition - 400 bad request");
 					result = -1;
 				}
 				else{
@@ -1246,7 +1301,8 @@ public class Communication implements Communicator {
 					result = tmp;
 				}
 				else {
-					result = -300;
+					System.out.println("weathercondition - else");
+					result = -1;
 				}
 			}
 		}
@@ -1289,13 +1345,21 @@ public class Communication implements Communicator {
     private List<Map<String, String>> getAllStations(){
     	Gson gson = new Gson();
     	List<Map<String, String>> itemsList = new ArrayList<Map<String, String>>();
-    	HttpResponse<String> response;
+    	HttpResponse<String> stringResponse;
 		try {
 			
 			
-			response = Unirest.get(StadtradDBServerAdress + "/allStations").asString();
+			stringResponse = Unirest.get(StadtradDBServerAdress + "/allStations").asString();
+			
+    		System.out.println("statustext: "+stringResponse.getStatusText());
+    		System.out.println("---stringResponse.toString()--");
+    		System.out.println(stringResponse.toString());
+    		System.out.println("-----");
+    		
+    		
+    		
 			// Speichern des Jsons aus dem Requestbody
-			String json = response.getBody();
+			String json = stringResponse.getBody();
 			
 			if(json!= null && !json.isEmpty()){
 				if(json.contains("404 Not found")){

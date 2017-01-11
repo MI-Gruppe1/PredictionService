@@ -36,10 +36,13 @@ public class Prediction implements Predictor {
 	 */
 
 	public double[] predict(String address, int numOfSamples) throws InvalidAttributeValueException {
-		Date now = new Date();
-		long time = now.getTime();
-		long day = 24 * 60 * 60 * 1000;// one day in milliseconds
-		long hour = 60 * 60 * 1000;// one hour in milliseconds
+//		Date now = new Date();
+//		long time = now.getTime();
+		long time = System.currentTimeMillis() / 1000L;
+		
+		System.out.println("time base:" +time);
+		long day = 24 * 60 * 60;// one day in milliseconds
+		long hour = 60 * 60;// one hour in milliseconds
 		double result[] = { 0, 0, 0, 0, 0, 0 };
 
 		double tempdif[] = new double[numOfSamples];
@@ -53,14 +56,18 @@ public class Prediction implements Predictor {
 		double weight[] = new double[numOfSamples];
 
 		bikes[0] = (int) comm.getFreeBikesofStationAtSpecTime(address, time);
+		System.out.println("bikes: " + bikes[0]);
 		if (bikes[0] < 0)
 			throw new InvalidAttributeValueException("invalid current bikes");
 		//System.out.println("bikes[0]:" + bikes[0]);
 
 		for (int i = 1; i <= numOfSamples; i++) {
 
+			System.out.println("time calc:" + (time -i *day));
 			bikes[2 * i - 1] = comm.getFreeBikesofStationAtSpecTime(address, (time - i * day));
+			System.out.println( "bikes: " + bikes[2 * i -1]);
 			bikes[2 * i] = comm.getFreeBikesofStationAtSpecTime(address, (time - i * day - hour));
+			System.out.println("bikes: " + bikes[2 * i]);
 			if (bikes[2 * i - 1] < 0)
 				throw new InvalidAttributeValueException("invalid bike data");
 			if (bikes[2 * i - 1] < 0)
@@ -72,8 +79,10 @@ public class Prediction implements Predictor {
 
 		for (int i = 0; i < numOfSamples + 1; i++) {
 			temperature[i] = comm.getTemperatureAtTime(address, time - i * day);
+			System.out.println("temperature: "+temperature[i]);
 			precipitation[i] = comm.getWeatherConditionAtTime(address, time - i * day);
-
+			System.out.println("weathercondition: "+precipitation[i]);
+			
 			if (temperature[i] < -274 || temperature[i] > 100)
 				throw new InvalidAttributeValueException("invalid temperature data");
 			if (precipitation[i] < 0 || precipitation[i] > 1)
