@@ -59,11 +59,10 @@ public class Prediction implements Predictor {
 		System.out.println("bikes: " + bikes[0]);
 		if (bikes[0] < 0)
 			throw new InvalidAttributeValueException("invalid current bikes");
-		//System.out.println("bikes[0]:" + bikes[0]);
+
 
 		for (int i = 1; i <= numOfSamples; i++) {
 
-			System.out.println("time calc:" + (time -i *day));
 			bikes[2 * i - 1] = comm.getFreeBikesofStationAtSpecTime(address, (time - i * day));
 			System.out.println( "bikes: " + bikes[2 * i -1]);
 			bikes[2 * i] = comm.getFreeBikesofStationAtSpecTime(address, (time - i * day - hour));
@@ -72,9 +71,6 @@ public class Prediction implements Predictor {
 				throw new InvalidAttributeValueException("invalid bike data");
 			if (bikes[2 * i - 1] < 0)
 				throw new InvalidAttributeValueException("invalid bike data");
-
-			//System.out.println("bikes[" + (2 * i - 1) + "]:" + bikes[2 * i - 1]);
-			//System.out.println("bikes[" + (2 * i) + "]:" + bikes[2 * i]);
 		}
 
 		for (int i = 0; i < numOfSamples + 1; i++) {
@@ -87,14 +83,11 @@ public class Prediction implements Predictor {
 				throw new InvalidAttributeValueException("invalid temperature data");
 			if (precipitation[i] < 0 || precipitation[i] > 1)
 				throw new InvalidAttributeValueException("invalid precipitation data");
-
-			//System.out.println("tempdata[" + i + "]:" + temperature[i]);
-			//System.out.println("precipitation[" + i + "]:" + precipitation[i]);
 		}
 
-		// fill result array with the past 5 hours
+		// fill result array with the past 5 hours		
 		for (int i = 1; i < result.length; i++) {
-			result[i] = (int) comm.getFreeBikesofStationAtSpecTime(address, time - i * hour);
+			result[i] = (int) comm.getFreeBikesofStationAtSpecTime(address, (time - (i * hour)));
 			if (result[i] < 0)
 				throw new InvalidAttributeValueException("invalid bike data for result");
 		}
