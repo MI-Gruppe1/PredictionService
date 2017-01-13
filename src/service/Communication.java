@@ -42,7 +42,9 @@ public class Communication implements Communicator {
 		this.StadtradDBServerAdress = stadtradDBServerAdress;
 		prediction = new Prediction(this);
 	}
-	
+	/**
+	 * This method updates the locally stored list of currently active CityBike Stations 
+	 */
 	public void updateStations(){
 		List<Map<String, String>> allStations;
 		
@@ -62,7 +64,13 @@ public class Communication implements Communicator {
 		latMap = tmpLatMap;
 		longMap = tmpLongMap;
 	}
-	
+	/**
+	 * This method uses the prediction and produces a JSON array and returns it 
+	 * 
+	 * @param String stationsname the Name of the Station for which the prediction shall be run
+	 * 
+	 * @return returns a JSON array containing the Predicted values
+	 */
 	public JsonArray getPrediction(String stationsname){
 		double[] predict = {0,0,0,0,0};
 		if(longMap.isEmpty() && latMap.isEmpty()){
@@ -131,6 +139,15 @@ public class Communication implements Communicator {
     	return result;
 	}
 
+	/**
+	 * This method calls the WeatherDB Service to get the Weathercondition at a specific time 
+	 * 
+	 * @param String stationsname the Name of the Station for which the prediction shall be run
+	 * @param Long timeStamp the timestamp for which the Data is to be aquired
+	 * 
+	 * @return returns the weathercondition received from the WeatherDB service
+	 */
+	
 	@Override
 	public double getWeatherConditionAtTime(String stationsname, Long timeStamp) {
 		double result = 0;
@@ -180,11 +197,12 @@ public class Communication implements Communicator {
 	}
 	
 	/**
-	 * This method requests the temperature at a specific time from the WeatherService.
+	 * This method requests the temperature at a specific time from the WeatherDB service.
 	 * 
-	 * @param ?.
+	 * @param String stationsname the Name of the Station for which the prediction shall be run
+	 * @param Long timeStamp the timestamp for which the Data is to be aquired
 	 * 
-	 * @return returns 
+	 * @return returns the data received from the WeatherDB service
 	 */
 
 	@Override
@@ -257,7 +275,9 @@ public class Communication implements Communicator {
     	return jarray;
     }
 
-	
+    /**
+	 * This method generates a locally stored list of currently active CityBike Stations 
+	 */
     private List<Map<String, String>> getAllStations(){
     	Gson gson = new Gson();
     	List<Map<String, String>> itemsList = new ArrayList<Map<String, String>>();

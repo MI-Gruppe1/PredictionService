@@ -6,7 +6,7 @@ import javax.management.InvalidAttributeValueException;
 
 /**
  * 
- * @author Moritz Heindorf and Harry This class offers one/several methods to
+ * @author Moritz Heindorf and Harry This class offers one method to
  *         calculate the predicted amount of bikes present at a certain station
  */
 public class Prediction implements Predictor {
@@ -29,9 +29,8 @@ public class Prediction implements Predictor {
 	 * @param numOfSamples
 	 *            The number of timestamps that are to be used for the
 	 *            prediction
-	 * @return returns an array of integers where the first entry is the
-	 *         predicted value and the following 5 entries are the current
-	 *         amount of bikes and the bikes present in the last 4 hours
+	 * @return returns an array of doubles where the first entry is the
+	 *         predicted gradient and the following 5 entries are the bikes present in the last 5 hours
 	 *         respectively
 	 */
 
